@@ -1,5 +1,6 @@
 package models
 
+//User Needs Class Dawg
 type User struct {
 	ID        *int64 `json:"id,omitempty"`
 	Username  string `json:"username" binding:"required"`

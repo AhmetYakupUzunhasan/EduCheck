@@ -107,3 +107,7 @@ func GetAssociatedAssignments(ctx *gin.Context) {
 	})
 
 }
+
+func RespondToAssignment(ctx *gin.Context) {
+
+}

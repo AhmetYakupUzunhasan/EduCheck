@@ -1,5 +1,12 @@
 package models
 
+type Class struct {
+	ID          int
+	Name        string
+	Description string
+	TeacherID   int
+}
+
 type Assignment struct {
 	ID          int
 	Title       string
