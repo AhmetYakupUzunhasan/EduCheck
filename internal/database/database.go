@@ -100,6 +100,28 @@ func InsertAssignmentIntoDb(assignment *models.PostAssignment) error {
 	return nil
 }
 
+func SelectAssignmentsFromDb() ([]models.Assignment, error) {
+	query := "SELECT * FROM assignments"
+	rows, err := db.Query(query)
+	if err != nil {
+		fmt.Println("Error when selecting assignments from db: ", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var assignments []models.Assignment
+	for rows.Next() {
+		var c models.Assignment
+		if err := rows.Scan(&c.ID, &c.Title, &c.Explanation, &c.CreatedAt, &c.ExpiresAt, &c.Status); err != nil {
+			return nil, err
+		}
+		assignments = append(assignments, c)
+	}
+
+	return assignments, nil
+
+}
+
 func InsertUserIntoDb(user *models.User) (string, error) {
 	query := "INSERT INTO users (username, email, password, created_at) VALUES (?,?,?,?)"
 	result, err := db.Exec(query, user.Username, user.Email, user.Password, user.CreatedAt)
