@@ -261,3 +261,27 @@ func GetUsers(ctx *gin.Context) {
 		"error": "You're Good To Go",
 	})
 }
+
+func BindUserToClass(ctx *gin.Context) {
+	var userToClass models.UserToClass
+	if err := ctx.ShouldBindJSON(&userToClass); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"data":  nil,
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if err := database.InsertIntoUserToClass(&userToClass); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"data":  nil,
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":  userToClass,
+		"error": "You're Good To Go",
+	})
+}

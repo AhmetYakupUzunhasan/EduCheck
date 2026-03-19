@@ -88,6 +88,44 @@ func InitializeDatatables() error {
 		log.Fatal("Error when initializing user to assignment datatable: ", err)
 	}
 
+	//Class
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS classes(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			name TEXT NOT NULL,
+			description TEXT NOT NULL
+		);
+	`)
+	if err != nil {
+		log.Fatal("Error when initializing user to assignment datatable: ", err)
+	}
+
+	//Class
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS user_to_class(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER NOT NULL,
+			class_id INTEGER NOT NULL,
+			created_at TEXT NOT NULL,
+
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+			FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+		);
+	`)
+	if err != nil {
+		log.Fatal("Error when initializing user to assignment datatable: ", err)
+	}
+
+	return nil
+}
+
+func InsertIntoUserToClass(userToClass *models.UserToClass) error {
+	sql := "INSERT INTO user_to_class (user_id, class_id, created_at) VALUES (?,?,?)"
+	if _, err := db.Exec(sql, userToClass.UserID, userToClass.ClassID, userToClass.CreatedAt); err != nil {
+		fmt.Println("Error when inserting user_to_class into db: ", err)
+		return err
+	}
+
 	return nil
 }
 

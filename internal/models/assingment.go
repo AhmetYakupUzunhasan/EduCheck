@@ -4,7 +4,13 @@ type Class struct {
 	ID          int
 	Name        string
 	Description string
-	TeacherID   int
+}
+
+type UserToClass struct {
+	ID        int    `json:"id"`
+	UserID    int    `json:"user_id" binding:"required"`
+	ClassID   int    `json:"class_id" binding:"required"`
+	CreatedAt string `json:"created_at" binding:"required"`
 }
 
 type Assignment struct {
