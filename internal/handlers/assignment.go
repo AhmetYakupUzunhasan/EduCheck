@@ -92,8 +92,18 @@ func GetAssociatedAssignments(ctx *gin.Context) {
 		return
 	}
 
+	assignments, err := database.SelectAssignmentsByIdsFromDb(userToAssignments)
+	if err != nil {
+		ctx.JSON(500, gin.H{
+			"data":  nil,
+			"error": err.Error(),
+		})
+		return
+	}
+
 	ctx.JSON(200, gin.H{
-		"data":  userToAssignments,
+		"data":  assignments,
 		"error": nil,
 	})
+
 }

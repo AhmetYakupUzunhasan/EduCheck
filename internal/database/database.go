@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	_ "github.com/glebarez/go-sqlite"
 )
@@ -100,8 +101,8 @@ func InsertAssignmentIntoDb(assignment *models.PostAssignment) error {
 	return nil
 }
 
-func SelectUserToAssignmentFromDbByUserId(userID string) ([]models.UserToAssignment, error) {
-	query := "SELECT * FROM user_to_assignment WHERE user_id = ?"
+func SelectUserToAssignmentFromDbByUserId(userID string) ([]int, error) {
+	query := "SELECT assignment_id FROM user_to_assignment WHERE user_id = ?"
 	rows, err := db.Query(query, userID)
 	if err != nil {
 		fmt.Println("Error when selecting user to assignment from db by user_id: ", err)
@@ -109,10 +110,10 @@ func SelectUserToAssignmentFromDbByUserId(userID string) ([]models.UserToAssignm
 	}
 	defer rows.Close()
 
-	var userToAssignments []models.UserToAssignment
+	var userToAssignments []int
 	for rows.Next() {
-		var c models.UserToAssignment
-		if err := rows.Scan(&c.ID, &c.AssignmentID, &c.UserID, &c.CreatedAt, &c.Status); err != nil {
+		var c int
+		if err := rows.Scan(&c); err != nil {
 			fmt.Println("Error when selecting user to assignment from db by user_id: ", err)
 			return nil, err
 		}
@@ -120,6 +121,41 @@ func SelectUserToAssignmentFromDbByUserId(userID string) ([]models.UserToAssignm
 	}
 
 	return userToAssignments, nil
+}
+
+func SelectAssignmentsByIdsFromDb(ids []int) ([]models.Assignment, error) {
+	if len(ids) == 0 {
+		return nil, fmt.Errorf("No Things There")
+	}
+
+	placeholders := make([]string, len(ids))
+	args := make([]interface{}, len(ids))
+	for i := range ids {
+		placeholders[i] = "?"
+		args[i] = ids[i]
+	}
+
+	query := fmt.Sprintf("SELECT * FROM assignments WHERE id IN (%s)", strings.Join(placeholders, ","))
+
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		fmt.Println("Error when selecting assignment from db by id: ", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var assignments []models.Assignment
+	for rows.Next() {
+		var c models.Assignment
+		if err := rows.Scan(&c.ID, &c.Title, &c.Explanation, &c.CreatedAt, &c.ExpiresAt, &c.Status); err != nil {
+			fmt.Println("Error when selecting assignment from db by id: ", err)
+			return nil, err
+		}
+		assignments = append(assignments, c)
+	}
+
+	return assignments, nil
+
 }
 
 func SelectAssignmentsFromDb() ([]models.Assignment, error) {
