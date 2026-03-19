@@ -28,10 +28,12 @@ func main() {
 	protected := api.Group("", middleware.AuthMiddleware())
 	{
 		protected.GET("/users", handlers.GetUsers)
+		protected.GET("/assignments", handlers.GetAssignments)
+		protected.GET("/associated-assignments", handlers.GetAssociatedAssignments)
 
 		extraProtected := protected.Group("", middleware.RequireRole("teacher"))
 		{
-			extraProtected.POST("/assignment", handlers.PostAssignment)
+			extraProtected.POST("/assignments", handlers.PostAssignment)
 		}
 	}
 
