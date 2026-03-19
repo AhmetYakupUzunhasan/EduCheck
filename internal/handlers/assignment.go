@@ -47,3 +47,53 @@ func PostAssignment(ctx *gin.Context) {
 		"error": nil,
 	})
 }
+
+func GetAssignments(ctx *gin.Context) {
+	assignments, err := database.SelectAssignmentsFromDb()
+	if err != nil {
+		ctx.JSON(500, gin.H{
+			"data":  nil,
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"data":  assignments,
+		"error": nil,
+	})
+}
+
+func GetAssociatedAssignments(ctx *gin.Context) {
+	userID, exists := ctx.Get("sub")
+	if !exists {
+		ctx.JSON(500, gin.H{
+			"data":  nil,
+			"error": nil,
+		})
+		return
+	}
+
+	uid, ok := userID.(string)
+	if !ok {
+		ctx.JSON(400, gin.H{
+			"data":  nil,
+			"error": nil,
+		})
+		return
+	}
+
+	userToAssignments, err := database.SelectUserToAssignmentFromDbByUserId(uid)
+	if err != nil {
+		ctx.JSON(500, gin.H{
+			"data":  nil,
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"data":  userToAssignments,
+		"error": nil,
+	})
+}
